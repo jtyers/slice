@@ -1,6 +1,6 @@
 package main
 
-//go:generate ./go-dash-slice -out go-dash_generated_test.go -package main -type string -dir .
+//go:generate ./slice -out go-dash_generated_test.go -package main -type string -dir .
 
 import (
 	"strings"
