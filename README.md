@@ -2,10 +2,44 @@
 
 An implementation of utility functions inspired by [Lodash](https://lodash.com) for the Go language, focusing on efficiency without the use of reflection.
 
-All slice utilities opt for immutability so always a new copy of the array is returned instead of a different slice over the same array.
+This is based on the original [slice](https://github.com/go-dash/slice) repo with support for Go modules and code generation in a more idiomatic style (for example, to use with `go generate`).
 
-Some of the motivation behind this library is discussed in this [blog post](https://medium.freecodecamp.org/lodash-in-go-language-without-reflection-1d64b5115486).
+All slice utilities opt for immutability so always a new copy of the array is returned instead of a different slice over the same array. Some of the motivation behind the original library is discussed in this [blog post](https://medium.freecodecamp.org/lodash-in-go-language-without-reflection-1d64b5115486).
 
+## Installation
+
+1. Go get the library:
+
+    ```
+    go get github.com/jtyers/slice
+    ```
+  
+2. In your project, use `go generate` to generate `slice` types for the types you need.
+
+    ```go
+    //go:generate go-dash-slice -type string
+
+    ```
+
+    This will string `string.go` in the `go-dash` subdirectory. You can change the directory and package name for the generated code with `-dir` and `-package` respsectively.
+  
+3. Run `go generate`.
+
+4. Use in your code.
+    
+    ```go
+    import (
+      "<your project>/godash"
+    )
+    
+    godash.NewStringSlice()
+
+    ```
+
+
+You should check generated code into your repository and re-run `go generate` at least whenever you update this library or change the `//go:generate` comment in your code. I tend to run `go generate` as part of my tests (as in `go generate && go test`).
+
+&nbsp;
 ## Methods
 
 * [`Reverse`](#_reverseslice)
@@ -164,40 +198,6 @@ func main() {
     // => []Person{Person{"John", 18}, Person{"Rachel", 17}}
 }
 ```
-
-&nbsp;
-## Installation
-
-1. Install the `_gen` command line tool which generates code for the types you need:
-
-    ```
-    brew install go-dash/tools/gen
-    ```
-    > Verify with `_gen --version`
-  
-2. Go get the library:
-
-    ```
-    go get github.com/go-dash/slice
-    ```
-  
-3. In your project, import the relevant subsets for the types you need:
-
-    ```go
-    import (
-        "github.com/go-dash/slice/_string"
-        "github.com/go-dash/slice/_int"
-    )
-    ```
-  
-4. Once, generate the code for the library subsets by running the following in your project root:
-
-    ```
-    cd my-project
-    _gen
-    ```
-  
-A working example is available in the [test suite](test.sh).
 
 &nbsp;
 ## Running the tests
