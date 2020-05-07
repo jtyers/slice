@@ -1,5 +1,6 @@
-.idea
 /*
+!go.sum
+!go.mod
 !templates
 !.gitignore
 !LICENSE
