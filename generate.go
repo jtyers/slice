@@ -22,19 +22,23 @@ import (
 )
 {{ end }}
 type chain{{ .TypeNameCapitalised }} struct {
-	value []{{ .TypeName }}
+  isPtr bool
+	value []{{ .TypeLiteral }}
 }
 
-func {{ .NewFuncName }}(slice []{{ .TypeName }}) *chain{{ .TypeNameCapitalised }} {
-	return &chain{{ .TypeNameCapitalised }}{value: slice}
+func {{ .NewFuncName }}(slice []{{ .TypeLiteral }}) *chain{{ .TypeNameCapitalised }} {
+	return &chain{{ .TypeNameCapitalised }}{
+		value: slice,
+		{{ if .IsPtr }}isPtr: true,{{ end }}
+	}
 }
 
-func (c *chain{{ .TypeNameCapitalised }}) Value() []{{ .TypeName }} {
+func (c *chain{{ .TypeNameCapitalised }}) Value() []{{ .TypeLiteral }} {
 	return c.value
 }
 
-func Concat{{ .TypeNameCapitalised }}(slice []{{ .TypeName }}, slice2 []{{ .TypeName }}) (res []{{ .TypeName }}) {
-	res = make([]{{ .TypeName }}, 0, len(slice) + len(slice2))
+func Concat{{ .TypeNameCapitalised }}(slice []{{ .TypeLiteral }}, slice2 []{{ .TypeLiteral }}) (res []{{ .TypeLiteral }}) {
+	res = make([]{{ .TypeLiteral }}, 0, len(slice) + len(slice2))
 	for _, entry := range slice {
 		res = append(res, entry)
 	}
@@ -44,16 +48,16 @@ func Concat{{ .TypeNameCapitalised }}(slice []{{ .TypeName }}, slice2 []{{ .Type
 	return
 }
 
-func (c *chain{{ .TypeNameCapitalised }}) Concat(slice2 []{{ .TypeName }}) *chain{{ .TypeNameCapitalised }} {
+func (c *chain{{ .TypeNameCapitalised }}) Concat(slice2 []{{ .TypeLiteral }}) *chain{{ .TypeNameCapitalised }} {
 	return &chain{{ .TypeNameCapitalised }}{value: Concat{{ .TypeNameCapitalised }}(c.value, slice2)}
 }
 
-func Drop{{ .TypeNameCapitalised }}(slice []{{ .TypeName }}, n int) (res []{{ .TypeName }}) {
+func Drop{{ .TypeNameCapitalised }}(slice []{{ .TypeLiteral }}, n int) (res []{{ .TypeLiteral }}) {
 	l := len(slice) - n
 	if l < 0 {
 		l = 0
 	}
-	res = make([]{{ .TypeName }}, 0, l)
+	res = make([]{{ .TypeLiteral }}, 0, l)
 	for _, entry := range slice[len(slice) - l:] {
 		res = append(res, entry)
 	}
@@ -64,12 +68,12 @@ func (c *chain{{ .TypeNameCapitalised }}) Drop(n int) *chain{{ .TypeNameCapitali
 	return &chain{{ .TypeNameCapitalised }}{value: Drop{{ .TypeNameCapitalised }}(c.value, n)}
 }
 
-func DropRight{{ .TypeNameCapitalised }}(slice []{{ .TypeName }}, n int) (res []{{ .TypeName }}) {
+func DropRight{{ .TypeNameCapitalised }}(slice []{{ .TypeLiteral }}, n int) (res []{{ .TypeLiteral }}) {
 	l := len(slice) - n
 	if l < 0 {
 		l = 0
 	}
-	res = make([]{{ .TypeName }}, 0, l)
+	res = make([]{{ .TypeLiteral }}, 0, l)
 	for _, entry := range slice[:l] {
 		res = append(res, entry)
 	}
@@ -80,8 +84,8 @@ func (c *chain{{ .TypeNameCapitalised }}) DropRight(n int) *chain{{ .TypeNameCap
 	return &chain{{ .TypeNameCapitalised }}{value: DropRight{{ .TypeNameCapitalised }}(c.value, n)}
 }
 
-func Filter{{ .TypeNameCapitalised }}(slice []{{ .TypeName }}, fn func({{ .TypeName }},int)bool) (res []{{ .TypeName }}) {
-	res = make([]{{ .TypeName }}, 0, len(slice))
+func Filter{{ .TypeNameCapitalised }}(slice []{{ .TypeLiteral }}, fn func({{ .TypeLiteral }},int)bool) (res []{{ .TypeLiteral }}) {
+	res = make([]{{ .TypeLiteral }}, 0, len(slice))
 	for index, entry := range slice {
 		if fn(entry, index) {
 			res = append(res, entry)
@@ -90,11 +94,11 @@ func Filter{{ .TypeNameCapitalised }}(slice []{{ .TypeName }}, fn func({{ .TypeN
 	return
 }
 
-func (c *chain{{ .TypeNameCapitalised }}) Filter(fn func({{ .TypeName }},int)bool) *chain{{ .TypeNameCapitalised }} {
+func (c *chain{{ .TypeNameCapitalised }}) Filter(fn func({{ .TypeLiteral }},int)bool) *chain{{ .TypeNameCapitalised }} {
 	return &chain{{ .TypeNameCapitalised }}{value: Filter{{ .TypeNameCapitalised }}(c.value, fn)}
 }
 
-func First{{ .TypeNameCapitalised }}(slice []{{ .TypeName }}) (res {{ .TypeName }}) {
+func First{{ .TypeNameCapitalised }}(slice []{{ .TypeLiteral }}) (res {{ .TypeLiteral }}) {
 	if len(slice) == 0 {
 		return
 	}
@@ -103,10 +107,10 @@ func First{{ .TypeNameCapitalised }}(slice []{{ .TypeName }}) (res {{ .TypeName 
 }
 
 func (c *chain{{ .TypeNameCapitalised }}) First() *chain{{ .TypeNameCapitalised }} {
-	return &chain{{ .TypeNameCapitalised }}{value: []{{ .TypeName }}{First{{ .TypeNameCapitalised }}(c.value)}}
+	return &chain{{ .TypeNameCapitalised }}{value: []{{ .TypeLiteral }}{First{{ .TypeNameCapitalised }}(c.value)}}
 }
 
-func Last{{ .TypeNameCapitalised }}(slice []{{ .TypeName }}) (res {{ .TypeName }}) {
+func Last{{ .TypeNameCapitalised }}(slice []{{ .TypeLiteral }}) (res {{ .TypeLiteral }}) {
 	if len(slice) == 0 {
 		return
 	}
@@ -115,23 +119,23 @@ func Last{{ .TypeNameCapitalised }}(slice []{{ .TypeName }}) (res {{ .TypeName }
 }
 
 func (c *chain{{ .TypeNameCapitalised }}) Last() *chain{{ .TypeNameCapitalised }} {
-	return &chain{{ .TypeNameCapitalised }}{value: []{{ .TypeName }}{Last{{ .TypeNameCapitalised }}(c.value)}}
+	return &chain{{ .TypeNameCapitalised }}{value: []{{ .TypeLiteral }}{Last{{ .TypeNameCapitalised }}(c.value)}}
 }
 
-func Map{{ .TypeNameCapitalised }}(slice []{{ .TypeName }}, fn func({{ .TypeName }},int){{ .TypeName }}) (res []{{ .TypeName }}) {
-	res = make([]{{ .TypeName }}, 0, len(slice))
+func Map{{ .TypeNameCapitalised }}(slice []{{ .TypeLiteral }}, fn func({{ .TypeLiteral }},int){{ .TypeLiteral }}) (res []{{ .TypeLiteral }}) {
+	res = make([]{{ .TypeLiteral }}, 0, len(slice))
 	for index, entry := range slice {
 		res = append(res, fn(entry, index))
 	}
 	return
 }
 
-func (c *chain{{ .TypeNameCapitalised }}) Map(fn func({{ .TypeName }},int){{ .TypeName }}) *chain{{ .TypeNameCapitalised }} {
+func (c *chain{{ .TypeNameCapitalised }}) Map(fn func({{ .TypeLiteral }},int){{ .TypeLiteral }}) *chain{{ .TypeNameCapitalised }} {
 	return &chain{{ .TypeNameCapitalised }}{value: Map{{ .TypeNameCapitalised }}(c.value, fn)}
 }
 
 
-func Reduce{{ .TypeNameCapitalised }}(slice []{{ .TypeName }}, fn func({{ .TypeName }},{{ .TypeName }},int){{ .TypeName }}, initial {{ .TypeName }}) (res {{ .TypeName }}) {
+func Reduce{{ .TypeNameCapitalised }}(slice []{{ .TypeLiteral }}, fn func({{ .TypeLiteral }},{{ .TypeLiteral }},int){{ .TypeLiteral }}, initial {{ .TypeLiteral }}) (res {{ .TypeLiteral }}) {
 	res = initial
 	for index, entry := range slice {
 		res = fn(res, entry, index)
@@ -139,12 +143,12 @@ func Reduce{{ .TypeNameCapitalised }}(slice []{{ .TypeName }}, fn func({{ .TypeN
 	return
 }
 
-func (c *chain{{ .TypeNameCapitalised }}) Reduce(fn func({{ .TypeName }},{{ .TypeName }},int){{ .TypeName }}, initial {{ .TypeName }}) *chain{{ .TypeNameCapitalised }} {
-	return &chain{{ .TypeNameCapitalised }}{value: []{{ .TypeName }}{Reduce{{ .TypeNameCapitalised }}(c.value, fn, initial)}}
+func (c *chain{{ .TypeNameCapitalised }}) Reduce(fn func({{ .TypeLiteral }},{{ .TypeLiteral }},int){{ .TypeLiteral }}, initial {{ .TypeLiteral }}) *chain{{ .TypeNameCapitalised }} {
+	return &chain{{ .TypeNameCapitalised }}{value: []{{ .TypeLiteral }}{Reduce{{ .TypeNameCapitalised }}(c.value, fn, initial)}}
 }
 
-func Reverse{{ .TypeNameCapitalised }}(slice []{{ .TypeName }}) (res []{{ .TypeName }}) {
-	res = make([]{{ .TypeName }}, len(slice))
+func Reverse{{ .TypeNameCapitalised }}(slice []{{ .TypeLiteral }}) (res []{{ .TypeLiteral }}) {
+	res = make([]{{ .TypeLiteral }}, len(slice))
 	for index, entry := range slice {
 		res[len(slice)-1-index] = entry
 	}
@@ -155,9 +159,9 @@ func (c *chain{{ .TypeNameCapitalised }}) Reverse() *chain{{ .TypeNameCapitalise
 	return &chain{{ .TypeNameCapitalised }}{value: Reverse{{ .TypeNameCapitalised }}(c.value)}
 }
 
-func Uniq{{ .TypeNameCapitalised }}(slice []{{ .TypeName }}) (res []{{ .TypeName }}) {
-	seen := make(map[{{ .TypeName }}]bool)
-	res = []{{ .TypeName }}{}
+func Uniq{{ .TypeNameCapitalised }}(slice []{{ .TypeLiteral }}) (res []{{ .TypeLiteral }}) {
+	seen := make(map[{{ .TypeLiteral }}]bool)
+	res = []{{ .TypeLiteral }}{}
 	for _, entry := range slice {
 		if _, found := seen[entry]; !found {
 			seen[entry] = true
@@ -168,6 +172,9 @@ func Uniq{{ .TypeNameCapitalised }}(slice []{{ .TypeName }}) (res []{{ .TypeName
 }
 
 func (c *chain{{ .TypeNameCapitalised }}) Uniq() *chain{{ .TypeNameCapitalised }} {
+	if c.isPtr {
+		panic("Uniq() does not currently support pointers")
+	}
 	return &chain{{ .TypeNameCapitalised }}{value: Uniq{{ .TypeNameCapitalised }}(c.value)}
 }
 `
@@ -185,11 +192,21 @@ func main() {
 	flag.StringVar(&flagOutputDir, "dir", "go-dash-slice", "output directory (created if needed)")
 	flag.StringVar(&flagOutputFile, "out", "", "output filename")
 
+	flag.Parse()
+
+	isPtr := false
+	if flagTypeName[0] == '*' {
+		isPtr = true
+	}
+
+	typeLiteral := flagTypeName
+	if isPtr {
+		flagTypeName = flagTypeName[1:] + "Ptr"
+	}
+
 	if flagOutputFile == "" {
 		flagOutputFile = flagTypeName + ".go"
 	}
-
-	flag.Parse()
 
 	t := template.New("go-dash-slice")
 	t, err := t.Parse(TEMPLATE)
@@ -213,7 +230,9 @@ func main() {
 	typeNameCapitalised := strings.ToUpper(flagTypeName[0:1]) + flagTypeName[1:]
 
 	err = t.Execute(f, map[string]interface{}{
+		"IsPtr":               isPtr,
 		"TypeNameCapitalised": typeNameCapitalised,
+		"TypeLiteral":         typeLiteral,
 		"TypeName":            flagTypeName,
 		"Package":             flagPkg,
 		"Import":              flagImport,

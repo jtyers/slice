@@ -6,11 +6,15 @@
 package main
 
 type chainString struct {
+  isPtr bool
 	value []string
 }
 
 func NewStringSlice(slice []string) *chainString {
-	return &chainString{value: slice}
+	return &chainString{
+		value: slice,
+		
+	}
 }
 
 func (c *chainString) Value() []string {
@@ -152,5 +156,8 @@ func UniqString(slice []string) (res []string) {
 }
 
 func (c *chainString) Uniq() *chainString {
+	if c.isPtr {
+		panic("Uniq() does not currently support pointers")
+	}
 	return &chainString{value: UniqString(c.value)}
 }
