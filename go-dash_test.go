@@ -2,12 +2,13 @@ package main
 
 //go:generate ./slice -out go-dash_generated_test.go -package main -type string -dir .
 //go:generate ./slice -out go-dash_generated_ptr_test.go -package main -type *string -dir .
-//go:generate ./slice -out go-dash_generated_custom_test.go -package main -type CustomType -import github.com/jtyers/go-dash-slice -dir .
+//go:generate ./slice -out go-dash_generated_custom_test.go -package main -type CustomType -import github.com/jtyers/slice/customtype -dir .
 
 import (
 	"strings"
 	"testing"
 
+	. "github.com/jtyers/slice/customtype"
 	"github.com/stretchr/testify/require"
 )
 
@@ -606,7 +607,7 @@ func TestCustomTypeFilter(t *testing.T) {
 			"should run items via filter function",
 			[]CustomType{ct("first"), ct("second"), ct("third")},
 			func(s CustomType, i int) bool {
-				return s.name[len(s.name)-1:len(s.name)] == "d"
+				return s.Name[len(s.Name)-1:len(s.Name)] == "d"
 			},
 			[]CustomType{ct("second"), ct("third")},
 		},
@@ -676,7 +677,7 @@ func TestCustomTypeMap(t *testing.T) {
 			"should map input to output for simple function",
 			[]CustomType{ct("first"), ct("second"), ct("third")},
 			func(s CustomType, i int) CustomType {
-				result := strings.ToUpper(s.name)
+				result := strings.ToUpper(s.Name)
 				return CustomType{result}
 			},
 			[]CustomType{ct("FIRST"), ct("SECOND"), ct("THIRD")},
@@ -705,7 +706,7 @@ func TestCustomTypeReduce(t *testing.T) {
 			[]CustomType{ct("first"), ct("second"), ct("third")},
 			ct("initial"),
 			func(acc CustomType, val CustomType, i int) CustomType {
-				vv := acc.name + "-" + strings.ToUpper(val.name)
+				vv := acc.Name + "-" + strings.ToUpper(val.Name)
 				return ct(vv)
 			},
 			[]CustomType{ct("initial-FIRST-SECOND-THIRD")},

@@ -5,6 +5,11 @@
 
 package main
 
+
+import (
+  . "github.com/jtyers/slice/customtype"
+)
+
 type chainCustomType struct {
   isPtr bool
 	value []CustomType
