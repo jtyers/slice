@@ -1,4 +1,4 @@
-package main
+package customtype
 
 type CustomType struct {
 	name string
