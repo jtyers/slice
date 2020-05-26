@@ -1,5 +1,5 @@
 package customtype
 
 type CustomType struct {
-	name string
+	Name string
 }
