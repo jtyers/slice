@@ -36,6 +36,20 @@ func (c *chainString) Concat(slice2 []string) *chainString {
 	return &chainString{value: ConcatString(c.value, slice2)}
 }
 
+func ContainsString(slice []string, item string) (res bool) {
+	for _, val := range slice {
+		if val == item {
+			return true
+		}
+		
+	}
+	return false
+}
+
+func (c *chainString) Contains(item string) bool {
+	return ContainsString(c.value, item)
+}
+
 func DropString(slice []string, n int) (res []string) {
 	l := len(slice) - n
 	if l < 0 {

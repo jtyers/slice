@@ -36,6 +36,22 @@ func (c *chainStringPtr) Concat(slice2 []*string) *chainStringPtr {
 	return &chainStringPtr{value: ConcatStringPtr(c.value, slice2)}
 }
 
+func ContainsStringPtr(slice []*string, item *string) (res bool) {
+	for _, val := range slice {
+		if val == item {
+			return true
+		}
+		if *val == *item {
+			return true
+		}
+	}
+	return false
+}
+
+func (c *chainStringPtr) Contains(item *string) bool {
+	return ContainsStringPtr(c.value, item)
+}
+
 func DropStringPtr(slice []*string, n int) (res []*string) {
 	l := len(slice) - n
 	if l < 0 {

@@ -47,6 +47,7 @@ You should check generated code into your repository and re-run `go generate` at
 * [`Filter`](#_filterslice-func)
 * [`Map`](#_mapslice-func)
 * [`Reduce`](#_reduceslice-func-initial)
+* [`Contains`](#_containsslice-slice)
 * [`Concat`](#_concatslice-slice)
 * [`First`](#_firstslice)
 * [`Last`](#_lastslice)
@@ -117,6 +118,18 @@ Returns a new array which is the first slice with the second concatenated at its
 ```go
 _int.Concat([]int{1, 2, 3}, []int{4, 5})
 // => []int{1, 2, 3, 4, 5}
+```
+
+#### `_.Contains(slice, item)`
+
+Returns `true` if the given item is present in the slice. Equality (`==`) is used for comparisons, which means that structs with equal field values will be considered equal. Where `slice` is a slice of pointers, dereferenced values will also be checked for equality, meaning that two different pointers to the same underlying variable will also be considered equal.
+
+```go
+_int.Contains([]int{1, 2, 3}, 3)
+// => true
+
+_int.Contains([]int{1, 2, 3}, 4)
+// => false
 ```
 
 #### `_.First(slice)`

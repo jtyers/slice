@@ -41,6 +41,20 @@ func (c *chainCustomType) Concat(slice2 []CustomType) *chainCustomType {
 	return &chainCustomType{value: ConcatCustomType(c.value, slice2)}
 }
 
+func ContainsCustomType(slice []CustomType, item CustomType) (res bool) {
+	for _, val := range slice {
+		if val == item {
+			return true
+		}
+		
+	}
+	return false
+}
+
+func (c *chainCustomType) Contains(item CustomType) bool {
+	return ContainsCustomType(c.value, item)
+}
+
 func DropCustomType(slice []CustomType, n int) (res []CustomType) {
 	l := len(slice) - n
 	if l < 0 {

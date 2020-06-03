@@ -52,6 +52,22 @@ func (c *chain{{ .TypeNameCapitalised }}) Concat(slice2 []{{ .TypeLiteral }}) *c
 	return &chain{{ .TypeNameCapitalised }}{value: Concat{{ .TypeNameCapitalised }}(c.value, slice2)}
 }
 
+func Contains{{ .TypeNameCapitalised }}(slice []{{ .TypeLiteral }}, item {{ .TypeLiteral }}) (res bool) {
+	for _, val := range slice {
+		if val == item {
+			return true
+		}
+		{{ if .IsPtr}}if *val == *item {
+			return true
+		}{{ end }}
+	}
+	return false
+}
+
+func (c *chain{{ .TypeNameCapitalised }}) Contains(item {{ .TypeLiteral }}) bool {
+	return Contains{{ .TypeNameCapitalised }}(c.value, item)
+}
+
 func Drop{{ .TypeNameCapitalised }}(slice []{{ .TypeLiteral }}, n int) (res []{{ .TypeLiteral }}) {
 	l := len(slice) - n
 	if l < 0 {

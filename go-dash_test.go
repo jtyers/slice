@@ -36,6 +36,36 @@ func TestStringConcat(t *testing.T) {
 	}
 }
 
+func TestStringContains(t *testing.T) {
+	var tests = []struct {
+		name   string
+		input  []string
+		test   string
+		output bool
+	}{
+		{
+			"should return true if list contains item",
+			[]string{"first", "second", "third"},
+			"second",
+			true,
+		},
+		{
+			"should return false if list does not contain item",
+			[]string{"first", "second", "third"},
+			"false",
+			false,
+		},
+	}
+
+	for _, test := range tests {
+		c := NewStringSlice(test.input)
+
+		got := c.Contains(test.test)
+
+		require.Equal(t, got, test.output)
+	}
+}
+
 func TestStringDrop(t *testing.T) {
 	var tests = []struct {
 		name   string
@@ -293,6 +323,46 @@ func TestStringPtrConcat(t *testing.T) {
 	}
 }
 
+func TestStringPtrContains(t *testing.T) {
+	slice := stringPtrSlice([]string{"first", "second", "third"})
+
+	var tests = []struct {
+		name   string
+		input  []*string
+		test   *string
+		output bool
+	}{
+		{
+			"should return true if item (exact pointer) present",
+			slice,
+			slice[1],
+			true,
+		},
+		{
+			"should return true if a different pointer to the same item is present",
+			slice,
+			stringPtr("second"),
+			true,
+		},
+		{
+			"should return false if item not present",
+			slice,
+			stringPtr("fourth"),
+			false,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			c := NewStringPtrSlice(test.input)
+
+			got := c.Contains(test.test)
+
+			require.Equal(t, test.output, got)
+		})
+	}
+}
+
 func TestStringPtrDrop(t *testing.T) {
 	var tests = []struct {
 		name   string
@@ -545,6 +615,38 @@ func TestCustomTypeConcat(t *testing.T) {
 		got := c.Concat(test.add)
 
 		require.Equal(t, got.Value(), test.output)
+	}
+}
+
+func TestCustomTypeContains(t *testing.T) {
+	var tests = []struct {
+		name   string
+		input  []CustomType
+		test   CustomType
+		output bool
+	}{
+		{
+			"should return true if struct with equal fields is present",
+			[]CustomType{ct("first"), ct("second"), ct("third")},
+			ct("third"),
+			true,
+		},
+		{
+			"should false if item is not present",
+			[]CustomType{ct("first"), ct("second"), ct("third")},
+			ct("fourth"),
+			false,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			c := NewCustomTypeSlice(test.input)
+
+			got := c.Contains(test.test)
+
+			require.Equal(t, got, test.output)
+		})
 	}
 }
 
