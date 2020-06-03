@@ -21,7 +21,7 @@ All slice utilities opt for immutability so always a new copy of the array is re
 
     ```
 
-    This will string `string.go` in the `go-dash` subdirectory. You can change the directory and package name for the generated code with `-dir` and `-package` respsectively.
+    This will string `string.go` in the `go-dash` subdirectory. You can change the directory and package name for the generated code with `-dir` and `-package` respectively. You can also use `-build-tag` to add build tags to the head of the generated files.
   
 3. Run `go generate`.
 
